@@ -1,0 +1,207 @@
+================================================================================
+SKILL CFD MESH DESIGN - ACTUALIZACIÓN ICEM CFD
+================================================================================
+
+CAMBIOS REALIZADOS:
+  ✓ Agregado exporto específico para ICEM CFD
+  ✓ Nuevo documento guía: references/icem_cfd_workflow.md
+  ✓ Script mesh_calculator.py extendido con generate_icem_notes()
+  ✓ Parámetros ICEM listos para copiar-pegar en UI
+
+================================================================================
+NEW OUTPUT: {prefix}_icem_notes.txt
+================================================================================
+
+El script ahora genera 3 documentos (en lugar de 2):
+
+1. {prefix}.json
+   → Config estructurada (Gmsh, Salome, ICEM)
+
+2. {prefix}_icem_notes.txt  ← NUEVO
+   → Parámetros dimensionado ICEM CFD
+   → Tamaños: Global, Superficies, Curvas, Inflación
+   → Workflow paso-a-paso
+   → Parámetros copiar-pegar al final
+
+3. {prefix}_fluent_notes.txt
+   → Setup Fluent (como antes)
+
+4. {prefix}_debug.txt
+   → Valores internos (como antes)
+
+================================================================================
+PARÁMETROS ICEM GENERADOS
+================================================================================
+
+El archivo {prefix}_icem_notes.txt contiene:
+
+1. BASE SIZE (Global)
+   Tamaño para todo el dominio far-field
+   Ejemplo: 2.0e-02 m
+
+2. LOCAL SIZES - SURFACES
+   Superficies del airfoil/cilindro (upper, lower)
+   Ejemplo surface size: 1.78e-03 m
+   Ejemplo LE (leading edge): 1.11e-03 m
+
+3. LOCAL SIZES - CURVES
+   Contornos y bordes
+   Ejemplo airfoil: 2.22e-03 m
+   Ejemplo far-field: 4.0e-02 m
+
+4. INFLATION LAYERS
+   Boundary layer resolution
+   First height (Δy): 2.22e-05 m
+   # Layers: 749
+   Growth ratio: 1.2
+
+5. REFINEMENT ZONES
+   LSB region, wake refinement
+   Tamaños y ubicaciones específicas
+
+6. PARÁMETROS COPIAR-PEGAR
+   Todos los valores listados para fácil ingreso en ICEM UI
+
+================================================================================
+WORKFLOW ICEM RÁPIDO
+================================================================================
+
+1. python scripts/mesh_calculator.py \
+     --re 61400 --fluid water --char-length 0.1 \
+     --model rans-sst --y-plus 0.5 --deltax-plus 50 \
+     --output sd8020_icem
+
+   → Genera sd8020_icem_icem_notes.txt
+
+2. Abrir ICEM CFD
+   
+3. File > Open > airfoil.iges
+   
+4. Geometry > Primitive > Box (crear dominio)
+   Dimensiones: {upstream + downstream} × {height}
+   
+5. Geometry > Boolean > Subtract (airfoil del dominio)
+
+6. Mesh > Global Size > 2.0e-02 (o valor del archivo)
+
+7. Surfaces > Select airfoil > Properties > Mesh Size > 1.78e-03
+
+8. Curves > Leading edge > Properties > Mesh Size > 1.11e-03
+
+9. Inflation > New Inflation
+   ├─ First height: 2.22e-05
+   ├─ Layers: 749
+   └─ Growth ratio: 1.2
+
+10. Mesh > Compute
+    → Genera malla unstructured
+
+11. File > Export > Fluent Case (.cas)
+    → Importar a Fluent y ejecutar
+
+================================================================================
+DOCUMENTACIÓN
+================================================================================
+
+Archivo nuevo: references/icem_cfd_workflow.md
+  └─ Guía detallada ICEM step-by-step
+  └─ Troubleshooting de errores comunes
+  └─ Estimación de nodos
+  └─ Variantes (hybrid mesh, 3D, periodic)
+
+Documentos existentes:
+  ├─ SKILL.md → Descripción general (actualizado)
+  ├─ README.md → Uso CLI
+  └─ references/
+      ├─ rans_des_les_criteria.md → Criterios por modelo
+      ├─ gci_protocol.md → Protocolo GCI
+      ├─ fluid_properties.json → Air, water
+      └─ icem_cfd_workflow.md ← NUEVO
+
+================================================================================
+EJEMPLO COMPLETO
+================================================================================
+
+Entrada:
+  python mesh_calculator.py \
+    --re 61400 --fluid water --char-length 0.1 \
+    --model rans-sst --y-plus 0.5 --deltax-plus 50 \
+    --output test_sd8020
+
+Outputs generados:
+  test_sd8020.json                    ← Config estructurada
+  test_sd8020_icem_notes.txt          ← ICEM CFD dimensionado ← NUEVO
+  test_sd8020_fluent_notes.txt        ← Fluent setup
+  test_sd8020_debug.txt               ← Logs internos
+
+Archivo icem_notes.txt contiene:
+
+╔═══════════════════════════════════════════════════════════╗
+║ DIMENSIONADO DE MALLA PARA ICEM CFD                      ║
+╠═══════════════════════════════════════════════════════════╣
+║ Caso: Re=61400, L_char=0.1 m, water, RANS-SST            ║
+╚═══════════════════════════════════════════════════════════╝
+
+1. BASE SIZE (Global)
+   Dominio height/width: 1.0 m
+   Recomendado base size: 2.0e-02 m
+
+2. LOCAL SIZES - SURFACE
+   Superficie principal: 1.78e-03 m
+   Leading edge: 1.11e-03 m
+   Trailing edge: 2.22e-03 m
+
+3. LOCAL SIZES - CURVES
+   Airfoil perimeter: 2.22e-03 m (Δx+=50)
+   Far-field outer: 4.0e-02 m
+
+4. INFLATION LAYERS
+   First height (Δy): 2.22e-05 m
+   # Layers: 749
+   Growth ratio: 1.2
+   Target y+: 0.5
+
+5. REFINEMENT ZONES
+   LSB region: 1.56e-03 m (0.7×Δx)
+   Wake: 3.34e-03 m (1.5×Δx)
+
+6. PARÁMETROS COPIAR-PEGAR
+   Global Size: 2.0e-02
+   Surface (airfoil): 1.78e-03
+   Curve (LE): 1.11e-03
+   Curve (airfoil): 2.22e-03
+   Curve (farfield): 4.0e-02
+
+   Inflation:
+     First height: 2.22e-05
+     Layers: 749
+     Growth ratio: 1.2
+
+   Dominio:
+     Upstream: 0.5 m
+     Downstream: 1.5 m
+     Height: 1.0 m
+
+================================================================================
+VENTAJAS
+================================================================================
+
+✓ No necesitas calcular tamaños manualmente
+✓ Parámetros ICEM auto-generados, listos para copiar-pegar
+✓ Valores consistentes con modelo turbulencia (RANS/DES/LES)
+✓ Incluye refinement zones para LSB, wake
+✓ Troubleshooting si malla falla en ICEM
+✓ Estimación de nodos finales
+✓ Totalmente reproducible (mismo Re/fluido = mismo dimensionado)
+
+================================================================================
+PRÓXIMAS EXTENSIONES
+================================================================================
+
+1. Export Gmsh Python API (directo a script .geo)
+2. Export Salome Python API
+3. Export ICEM Python script (automático, sin UI)
+4. Integración directa MCP a ICEM (genera malla automáticamente)
+5. Criterios avanzados (compresibilidad, shock-capturing)
+
+================================================================================

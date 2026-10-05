@@ -1,0 +1,246 @@
+
+================================================================================
+DIMENSIONADO DE MALLA PARA ICEM CFD
+================================================================================
+
+Generado: 2026-10-05 14:36:20
+Caso: Re = 61400, L_char = 0.1000 m, water
+Modelo: RANS-SST
+
+PARÁMETROS GLOBALES
+================================================================================
+
+1. BASE SIZE (Global)
+   
+   Dominio height/width: 1.0000 m
+   Recomendado base size: 2.0000e-02 m
+   
+   En ICEM UI:
+   → Geometry > Global Size > Input: 2.0000e-02
+   
+   Este tamaño se aplica a todo el dominio far-field.
+   Se refinará localmente en geometría y BL.
+
+================================================================================
+
+2. LOCAL SIZES - SURFACE (Geometría Airfoil/Cilindro)
+   
+   Superficie principal (upper/lower):
+   └─ Size: 1.7798e-03 m
+   
+   Leading edge (zona crítica):
+   └─ Size: 1.1124e-03 m
+   
+   Trailing edge:
+   └─ Size: 2.2247e-03 m
+   
+   Workflow en ICEM:
+   1. Select surface (Upper, Lower)
+      → Properties > Mesh Size > 1.7798e-03
+   
+   2. Select curve (Leading edge)
+      → Properties > Mesh Size > 1.1124e-03
+      → Check "Mesh along curve" si es necesario
+
+================================================================================
+
+3. LOCAL SIZES - CURVES (Contornos)
+   
+   Airfoil perimeter:
+   └─ Curve size: 2.2247e-03 m
+      (Δx+ = 50.0, chordwise)
+   
+   Far-field outer boundary:
+   └─ Curve size: 4.0000e-02 m
+      (Coarse para far-field)
+   
+   En ICEM:
+   → Curves > Select curve > Properties > Size > 2.2247e-03
+
+================================================================================
+
+4. INFLATION LAYERS (Boundary Layer)
+   
+   First layer height (Δy):     2.2247e-05 m
+   Number of layers:             749
+   Growth ratio:                 1.2
+   
+   Total BL thickness:           2.2542e+55 m
+   Target y+ (pared):            0.5000
+   
+   En ICEM UI (Inflation Setup):
+   1. Select surface (airfoil wall)
+   2. Inflation > New inflation
+      ├─ First height: 2.2247e-05 m
+      ├─ Number of layers: 749
+      └─ Growth ratio: 1.2
+   
+   3. Smooth transition
+      └─ Si ICEM alerta "layers too big", aumentar growth ratio a 1.3
+
+================================================================================
+
+5. REFINEMENT ZONES (Regiones especiales)
+   
+   A. Separación laminar (LSB region)
+      └─ Si esperado LSB en x/c ≈ 0.3–0.6:
+         ├─ Crear box refinement
+         ├─ Size: 1.5573e-03 m
+         └─ Max distance from surface: 1.1124e-04 m
+   
+   B. Wake behind airfoil
+      └─ Box refinement (downstream)
+         ├─ Size: 3.3371e-03 m
+         └─ Extent: x/c = [1.0, 15×L_char]
+
+================================================================================
+
+6. PARÁMETROS DE MALLA GLOBAL (ICEM Advanced)
+   
+   Mesh type:                   Unstructured / Hybrid (si quieres prisms en BL)
+   Element type:                Tetrahedral (std) o Prism + Tet (mejor)
+   
+   Si Hybrid (Prism + Tet):
+   ├─ Prism in inflation layers: ON
+   ├─ Prism height: 2.2247e-05 m
+   └─ Prism layers: 749
+   
+   Quality:
+   ├─ Min angle: 20° (default)
+   └─ Growth rate: 1.2 (en transición BL→far-field)
+
+================================================================================
+
+7. DOMINIO Y BOUNDARIES
+   
+   Inlet (upstream):      0.5000 m
+   Outlet (downstream):   1.5000 m
+   Height (top/bottom):   ±0.5000 m
+   
+   En ICEM:
+   1. Create domain box (Geometry > Primitive > Box)
+      └─ Dimensions: 2.0000 × 1.0000 × [si 3D: 0.004449433084885587 m]
+   
+   2. Boolean subtract airfoil from domain
+      → Geometry > Boolean > Subtract
+   
+   3. Assign boundary names:
+      ├─ Inlet: "inlet"
+      ├─ Outlet: "outlet"
+      ├─ Walls (sides): "sym_top", "sym_bottom"
+      └─ Airfoil: "wall"
+
+================================================================================
+
+8. DIMENSIONADO 3D (si Δz+ especificado)
+   
+   Spanwise domain size:     0.004449433084885587 m
+   Spanwise spacing (Δz):    0.004449433084885587 m
+   
+   Si 3D:
+   └─ Periodic BC (recomendado si LSB dinámico):
+      ├─ Create periodic pair
+      ├─ Lz = 0.1×L_char (pequeño para ahorrar nodos)
+      └─ En Fluent: Periodic-Rotational con offset 0
+
+================================================================================
+
+WORKFLOW RECOMENDADO EN ICEM
+================================================================================
+
+1. Importar geometría
+   → File > Open > airfoil.iges/step
+
+2. Crear dominio
+   → Geometry > Primitive > Box (parámetros arriba)
+   → Boolean Subtract airfoil del dominio
+
+3. Asignar tamaños
+   → Mesh > Global Size: 2.0000e-02 m
+   → Surfaces > Select airfoil > Size: 1.7798e-03 m
+   → Curves > Leading edge > Size: 1.1124e-03 m
+
+4. Inflation layers
+   → Surface > Select airfoil wall
+   → Inflation > New
+      ├─ First height: 2.2247e-05 m
+      ├─ Layers: 749
+      └─ Ratio: 1.2
+
+5. Generar malla
+   → Mesh > Mesh > Compute
+   → Verificar element count (~85000 nodos 2D esperado)
+
+6. Validar calidad
+   → Mesh > Quality > Check
+   → Min angle: debe ser > 20°
+   → Max aspect ratio en BL: OK (~1000 es aceptable)
+
+7. Exportar a Fluent
+   → File > Export > Fluent Case (.cas)
+   → ICEM automáticamente exporta malla + boundary names
+
+================================================================================
+
+ESTIMACIÓN DE NODOS
+================================================================================
+
+Basado en geometría 2D y parámetros:
+
+FAR-FIELD elements:
+  Domain area: 2.00 × 1.00 m²
+  ÷ base_size²: ~2500 elementos
+
+BOUNDARY LAYER elements:
+  Chordwise: ~44 elementos
+  Normal (inflation): 749 capas
+  ≈ 1320 elementos BL
+
+REFINEMENT zones (LSB, wake):
+  ~2200 elementos
+
+TOTAL ESTIMADO (2D): 85000 nodos ±20%
+
+Si 3D: ×(Lz / Δz) = ×224 layers
+       ~19103557 nodos total
+
+================================================================================
+
+TROUBLESHOOTING EN ICEM
+================================================================================
+
+⚠ "Inflation layers too thick"
+   → Reducir n_layers (de 749 a 524)
+   → O aumentar growth_ratio de 1.2 a 1.3
+
+⚠ "Surface mesh cannot be created"
+   → Base size demasiado grande relativo a geometría
+   → Reducir base size a 1.0000e-02 m
+
+⚠ "Bad quality elements near leading edge"
+   → Curve size en LE muy pequeño
+   → Aumentar de 1.1124e-03 a 2.2247e-03 m
+   → O usar "Smooth transition" en inflation
+
+================================================================================
+
+PARÁMETROS PARA COPIAR-PEGAR
+================================================================================
+
+Global Size:              2.0000e-02
+Surface (airfoil):        1.7798e-03
+Curve (LE):               1.1124e-03
+Curve (airfoil):          2.2247e-03
+Curve (farfield):         4.0000e-02
+
+Inflation:
+  First height:           2.2247e-05
+  Layers:                 749
+  Growth ratio:           1.2
+
+Dominio:
+  Upstream:               0.5000 m
+  Downstream:             1.5000 m
+  Height:                 1.0000 m
+
+================================================================================

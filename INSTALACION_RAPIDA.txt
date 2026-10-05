@@ -1,0 +1,80 @@
+================================================================================
+SKILL CFD MESH DESIGN - INSTALACIÓN RÁPIDA
+================================================================================
+
+1. DESCARGAR Y EXTRAER
+   
+   tar -xzf cfd-mesh-skill.tar.gz
+   cd cfd-mesh-skill
+
+2. VERIFICAR ARCHIVOS
+   
+   ls -la
+   
+   Deberías ver:
+   ├── SKILL.md
+   ├── README.md
+   ├── scripts/mesh_calculator.py
+   └── references/
+       ├── rans_des_les_criteria.md
+       ├── gci_protocol.md
+       └── fluid_properties.json
+
+3. USAR INMEDIATAMENTE (CLI)
+   
+   # Ejemplo: SD8020 RANS-SST
+   python scripts/mesh_calculator.py \
+     --re 61400 \
+     --fluid water \
+     --char-length 0.1 \
+     --model rans-sst \
+     --y-plus 0.5 \
+     --deltax-plus 50 \
+     --deltaz-plus 100 \
+     --domain-upstream 5 \
+     --domain-downstream 15 \
+     --domain-height 10 \
+     --output mi_malla_sd8020 \
+     --debug
+   
+   Genera:
+   - mi_malla_sd8020.json (Gmsh/Salome)
+   - mi_malla_sd8020_fluent_notes.txt (Fluent setup)
+   - mi_malla_sd8020_debug.txt (logs internos)
+
+4. INSTALAR EN CLAUDE (Si es posible)
+   
+   Opción A: Copiar SKILL.md a tu carpeta de skills personales
+   Opción B: Usar en Claude.ai directamente (pedir a Claude que lo active)
+   Opción C: Guardar en ~/.claude/skills/cfd-mesh-design/SKILL.md
+
+5. DOCUMENTACIÓN
+   
+   Leer en este orden:
+   1. README.md → Overview y workflow completo
+   2. SKILL.md → Instrucciones detalladas
+   3. EXAMPLE_INTERACTIVE_USAGE.md → Cómo se vería interactivo
+   4. references/rans_des_les_criteria.md → Criterios por modelo
+   5. references/gci_protocol.md → Protocolo GCI
+
+6. PRÓXIMOS PASOS
+   
+   a) Prueba CLI con tu caso (reemplazar parámetros)
+   b) Verifica outputs en *.json, *_fluent_notes.txt
+   c) Crea malla en Gmsh con parámetros JSON
+   d) Importa a Fluent, sigue las notas generadas
+   e) Para RANS: ejecuta GCI (3 mallas)
+
+================================================================================
+CONTACTO / EXTENSIONES
+================================================================================
+
+El skill está diseñado para ser extensible:
+
+- Agregar modelos: TURBULENCE_CRITERIA dict en mesh_calculator.py
+- Agregar fluidos: FLUID_PROPERTIES dict
+- Nuevo criterio: modify calculate_mesh_spec()
+
+Ver SKILL.md sección "Notas de Debugging y Ampliación"
+
+================================================================================

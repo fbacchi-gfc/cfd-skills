@@ -1,0 +1,172 @@
+{
+  "water": {
+    "description": "Water (liquid), T-dependent",
+    "reference_temp_K": 293.15,
+    "reference_temp_C": 20,
+    "properties_at_reference": {
+      "rho": 998.21,
+      "mu": 0.001002,
+      "nu": 1.0040e-6,
+      "k": 0.598,
+      "cp": 4182,
+      "source": "NIST, ISO 20°C"
+    },
+    "temperature_range": {
+      "min_K": 273,
+      "max_K": 313,
+      "note": "0–40°C recommended for incompressible flow"
+    },
+    "data_points": [
+      {
+        "T_C": 0,
+        "T_K": 273.15,
+        "rho": 999.84,
+        "mu": 1.787e-3,
+        "nu": 1.787e-6
+      },
+      {
+        "T_C": 5,
+        "T_K": 278.15,
+        "rho": 999.96,
+        "mu": 1.518e-3,
+        "nu": 1.519e-6
+      },
+      {
+        "T_C": 10,
+        "T_K": 283.15,
+        "rho": 999.7,
+        "mu": 1.307e-3,
+        "nu": 1.306e-6
+      },
+      {
+        "T_C": 15,
+        "T_K": 288.15,
+        "rho": 999.1,
+        "mu": 1.139e-3,
+        "nu": 1.139e-6
+      },
+      {
+        "T_C": 20,
+        "T_K": 293.15,
+        "rho": 998.21,
+        "mu": 1.002e-3,
+        "nu": 1.004e-6
+      },
+      {
+        "T_C": 25,
+        "T_K": 298.15,
+        "rho": 997.04,
+        "mu": 8.91e-4,
+        "nu": 8.94e-7
+      },
+      {
+        "T_C": 30,
+        "T_K": 303.15,
+        "rho": 995.65,
+        "mu": 7.97e-4,
+        "nu": 8.01e-7
+      },
+      {
+        "T_C": 40,
+        "T_K": 313.15,
+        "rho": 992.24,
+        "mu": 6.51e-4,
+        "nu": 6.56e-7
+      }
+    ]
+  },
+  "air": {
+    "description": "Air (ideal gas), T and P dependent. Calculations assume P = 101.325 kPa",
+    "reference_temp_K": 288.15,
+    "reference_temp_C": 15,
+    "reference_pressure_Pa": 101325,
+    "properties_at_reference": {
+      "rho": 1.225,
+      "mu": 1.789e-5,
+      "nu": 1.461e-5,
+      "k": 0.0241,
+      "cp": 1005,
+      "source": "ISO 15°C, 101.325 kPa"
+    },
+    "viscosity_model": "Sutherland",
+    "sutherland_constant_K": 110.4,
+    "temperature_range": {
+      "min_K": 273,
+      "max_K": 373,
+      "note": "0–100°C; ρ adjusted via ideal gas, μ via Sutherland"
+    },
+    "data_points": [
+      {
+        "T_C": 0,
+        "T_K": 273.15,
+        "rho": 1.293,
+        "mu": 1.71e-5,
+        "nu": 1.323e-5,
+        "note": "Sea level, 101.325 kPa"
+      },
+      {
+        "T_C": 5,
+        "T_K": 278.15,
+        "rho": 1.269,
+        "mu": 1.738e-5,
+        "nu": 1.369e-5
+      },
+      {
+        "T_C": 10,
+        "T_K": 283.15,
+        "rho": 1.247,
+        "mu": 1.765e-5,
+        "nu": 1.416e-5
+      },
+      {
+        "T_C": 15,
+        "T_K": 288.15,
+        "rho": 1.225,
+        "mu": 1.789e-5,
+        "nu": 1.461e-5
+      },
+      {
+        "T_C": 20,
+        "T_K": 293.15,
+        "rho": 1.204,
+        "mu": 1.812e-5,
+        "nu": 1.506e-5
+      },
+      {
+        "T_C": 25,
+        "T_K": 298.15,
+        "rho": 1.184,
+        "mu": 1.849e-5,
+        "nu": 1.562e-5
+      },
+      {
+        "T_C": 30,
+        "T_K": 303.15,
+        "rho": 1.165,
+        "mu": 1.872e-5,
+        "nu": 1.608e-5
+      },
+      {
+        "T_C": 50,
+        "T_K": 323.15,
+        "rho": 1.093,
+        "mu": 1.953e-5,
+        "nu": 1.787e-5
+      },
+      {
+        "T_C": 100,
+        "T_K": 373.15,
+        "rho": 0.946,
+        "mu": 2.191e-5,
+        "nu": 2.318e-5
+      }
+    ]
+  },
+  "notes": {
+    "usage": "For custom fluids, provide rho (kg/m³) and mu (Pa·s) directly",
+    "water_temperature": "Interpolate linearly or use reference value if T not listed",
+    "air_temperature": "Use Sutherland for viscosity outside table; ρ = ρ_ref × (T_ref/T) at const P",
+    "incompressible": "Valid for low-speed flow (Ma < 0.3)",
+    "compressible": "If Ma > 0.3, apply compressibility corrections (beyond this tool scope)"
+  }
+}

@@ -1,0 +1,69 @@
+
+================================================================================
+INTEGRACIÓN FLUENT: RANS-SST
+================================================================================
+
+Generado: 2026-10-05 14:36:20
+Caso: Re = 61400, L_char = 0.1000 m, water
+
+PARÁMETROS MALLA
+================================================================================
+Δy (1er nodo):        2.2247e-05 m
+y+:                   0.5000 (objetivo 0.5)
+# capas BL:           749
+Δx (chordwise):       2.2247e-03 m  (Δx+ = 50.0)
+Δz (spanwise):        4.4494e-03 m  (Δz+ = 100.0)
+
+Dominio
+--------
+Upstream:             0.5000 m (5.0×L_char)
+Downstream:           1.5000 m (15.0×L_char)
+Altura/Ancho:         1.0000 m (10.0×L_char)
+
+CONFIGURACIÓN FLUENT
+================================================================================
+
+1. MALLA
+   - Importar malla desde Gmsh/Salome/ICEM
+   - Verificar inflation layers:
+     * First height: 2.2247e-05 m
+     * Growth ratio: 1.2 (típico)
+     * Número de capas: 749
+   
+   - Verificar tamaño de dominio (upstream/downstream/altura)
+
+2. MODELOS
+   - Modelo turbulencia:       RANS SST k-ω
+   - Wall treatment:           wall-resolved
+   - Notas:                    Integración viscous sublayer; near-wall treatment en Fluent
+
+3. CONDICIONES DE CONTORNO
+   - Inlet (upstream):    Velocity inlet, U = 0.6165 m/s
+   - Outlet (downstream): Pressure outlet, P_gauge = 0
+   - Pared (geometría):   No-slip
+   - Far-field (lateral): Symmetry o Slip wall
+
+4. MONITOREO
+   - Wall y+ (monitors): Crear función personalizada para y+ en pared
+   - Validar y+ < 1.0 (rans-sst)
+   - Monitorear Residuales: continuidad, x/y/z momentum < 1e-6
+
+5. CRITERIO CONVERGENCIA
+   - Residuales (ver arriba)
+   - Monitores de interés (C_L, separación, τ_w) < 1% variación en 100 iteraciones
+
+WARNINGS
+================================================================================
+  ✓ Sin warnings
+
+PRÓXIMOS PASOS
+================================================================================
+1. Exportar malla desde Gmsh/Salome con parámetros arriba
+2. Importar a Fluent
+3. Configurar modelos y BCs según sección CONFIGURACIÓN FLUENT
+4. Inicializar (y+ = 0, velocidades = 0)
+5. Iterar hasta convergencia
+6. Post-procesamiento: validar y+, τ_w, separación
+7. Si GCI > 10%, refinar con parámetro "fina" y repetir
+
+================================================================================

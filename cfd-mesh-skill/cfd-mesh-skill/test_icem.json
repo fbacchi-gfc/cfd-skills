@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-05T14:36:20.014553",
+    "model": "rans-sst",
+    "Re": 61400.0,
+    "fluid": "water",
+    "L_char": 0.1
+  },
+  "flow": {
+    "Re": 61400.0,
+    "L_char": 0.1,
+    "rho": 998.0,
+    "mu": 0.001002,
+    "fluid_name": "water",
+    "T": null
+  },
+  "mesh": {
+    "model": "rans-sst",
+    "y_plus": 0.5,
+    "deltax_plus": 50.0,
+    "deltaz_plus": 100.0,
+    "domain_upstream": 5,
+    "domain_downstream": 15,
+    "domain_height": 10,
+    "n_layers_bl": null
+  },
+  "specification": {
+    "y_plus_actual": 0.5,
+    "delta_y": 2.2247165424427936e-05,
+    "delta_x_plus": 50.0,
+    "delta_x": 0.0022247165424427937,
+    "delta_z_plus": 100.0,
+    "delta_z": 0.004449433084885587,
+    "n_layers": 749,
+    "domain_upstream": 0.5,
+    "domain_downstream": 1.5,
+    "domain_height": 1.0,
+    "tau_wall": 0.5081542265924314,
+    "u_friction": 0.02256485257509792,
+    "kolmogorov_scale": 5.640308844904474e-05,
+    "theta": 0.0002679685916740589,
+    "H": 2.59,
+    "reynolds_theta": 164.53271528787218,
+    "warnings": []
+  }
+}

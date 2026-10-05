@@ -1,0 +1,53 @@
+
+================================================================================
+DEBUG LOG: CFD MESH DESIGN
+================================================================================
+
+Timestamp: 2026-10-05T14:16:08.783358
+
+ENTRADA
+----------------
+Re:                61400.0
+L_char:            0.1 m
+Fluido:            water
+ρ:                 998.0 kg/m³
+μ:                 1.0020e-03 Pa·s
+Modelo:            rans-sst
+Objetivo y+:       0.5
+Objetivo Δx+:      50.0
+Objetivo Δz+:      100.0
+
+CÁLCULOS INTERNOS
+----------------
+U_inf:             0.616461 m/s
+τ_w:               5.081542e-01 Pa
+u_τ:               0.022565 m/s
+ν (cinemática):    1.004008e-06 m²/s
+η_K (Kolmogorov):  5.640309e-05 m
+θ (momentum):      2.679686e-04 m
+H (shape factor):  2.5900
+Re_θ:              164.5
+
+RESULTADO MALLA
+----------------
+Δy (1er nodo):     2.224717e-05 m
+y+ real:           0.500000
+Δy / η_K:          0.39
+# capas BL:        749
+
+Δx:                2.224717e-03 m
+Δx+ real:          50.000000
+Δx / L_char:       2.2247%
+
+Δz:                4.449433e-03 m
+Δz+ real:          100.000000
+
+DOMINIO
+----------------
+Upstream:          0.500000 m (5.0×L)
+Downstream:        1.500000 m (15.0×L)
+Height/Width:      1.000000 m (10.0×L)
+
+VALIDACIONES
+----------------
+✓ Sin warnings críticos
